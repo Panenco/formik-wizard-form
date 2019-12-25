@@ -1,26 +1,27 @@
 import { createContext, useContext, createElement } from 'react';
 
+export interface WizardStepMeta {
+  stepIndex: number;
+  title: string;
+  noReturn: boolean;
+  touched: boolean;
+}
+
 export interface MagicalContext {
-  current: {
-    step: number;
-    meta?: any;
-  };
-  register: Function;
-  next: Function;
-  back: Function;
-  toStep: Function;
-  toFirstStep: Function;
-  toLastStep: Function;
-  setWizardState: Function;
+  currentStepIndex: number;
+  stepsMeta: Array<WizardStepMeta>;
+  next: (cb: () => void) => void;
+  back: (cb: () => void) => void;
+  toStep: (step: number, cb: () => void) => void;
+  toFirstStep: () => void;
+  toLastStep: () => void;
+  setWizardState: (state: any | Function) => void;
   readonly wizardState: any;
 }
 
 export const MagicalContext = createContext<MagicalContext>({
-  current: {
-    step: 0,
-    meta: {},
-  },
-  register: () => {},
+  currentStepIndex: 0,
+  stepsMeta: [],
   next: () => {},
   back: () => {},
   toStep: () => {},

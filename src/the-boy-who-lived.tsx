@@ -2,7 +2,7 @@ import * as React from 'react';
 import { FormikConfig, FormikHelpers, Formik } from 'formik';
 import { object } from 'yup';
 
-import { MagicalContext } from 'context';
+import { MagicalContext, WizardStepMeta } from 'context';
 import { isFunction } from 'utils';
 
 export interface WizardStepContainer<Values> {
@@ -14,7 +14,11 @@ export interface WizardStepContainer<Values> {
 
 export interface WizardProps<Values> extends FormikConfig<Values> {
   steps: (React.ComponentType<any> & WizardStepContainer<Values>)[];
-  children?: (step: React.ReactNode) => React.ReactNode | React.ReactNode;
+  children?: (
+    current: {
+      step: React.ReactNode;
+    } & WizardStepMeta,
+  ) => React.ReactNode | React.ReactNode;
   component?: React.ComponentType<any>;
 }
 
@@ -26,6 +30,7 @@ export interface WizardState {
 class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, WizardState> {
   steps: any[];
   stepRef: any;
+  stepsMeta: WizardStepMeta[];
 
   constructor(props: WizardProps<Values>) {
     super(props);
@@ -36,6 +41,12 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
 
     this.stepRef = React.createRef();
     this.steps = props.steps;
+    this.stepsMeta = this.steps.map((Step, stepIndex) => ({
+      stepIndex,
+      title: Step.Title ?? '',
+      noReturn: Step.NoReturn ?? false,
+      touched: false,
+    }));
   }
 
   setWizardState = (state: any, cb?: () => void) => {
@@ -60,33 +71,28 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
 
     // Traveling back
     if (step < currentStep) {
-      for (let i = step; i <= currentStep; i += 1) {
+      for (let i = step; i < currentStep; i += 1) {
         if (this.steps[i].NoReturn) {
-          console.error(`You can't do fast travel over "point of no return"`);
+          console.error(`Transgression is prohibited over "point of no return"`);
           return;
         }
       }
     } else {
       // Traveling forward
-      // TODO: validation check
-      for (let i = currentStep; i <= step; i += 1) {
+      for (let i = currentStep + 1; i <= step; i += 1) {
         if (this.steps[i && i - 1].NoReturn) {
-          console.error(`You can't do fast travel over "point of no return"`);
+          console.error(`Transgression is prohibited over "point of no return"`);
           return;
         }
       }
     }
 
-    this.setState(
-      {
+    this.setState(state => {
+      this.stepsMeta[state.currentStep].touched = true;
+      return {
         currentStep: step,
-      },
-      cb,
-    );
-  };
-
-  register = step => {
-    this.steps.push(step);
+      };
+    }, cb);
   };
 
   toFirstStep = () => this.toStep(0);
@@ -104,28 +110,20 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
 
   back = (cb: () => void = () => {}) => {
     const { currentStep } = this.state;
-    if (this.steps[currentStep && currentStep - 1].NoReturn) {
-      console.error('You are trying to go back from "point of no return"');
-      return;
-    }
-
-    this.setState(
-      state => ({
-        currentStep: state.currentStep > 0 ? state.currentStep - 1 : state.currentStep,
-      }),
-      cb,
-    );
+    this.toStep(currentStep - 1, cb);
   };
 
   onSubmit = async (values, formikBag) => {
-    if (this.stepRef.current.onSubmit) {
+    if (this.stepRef.current?.onSubmit) {
       try {
         await this.stepRef.current.onSubmit(values, formikBag);
       } catch (e) {
         return e;
       }
     }
-    this.next();
+    if (this.state.currentStep + 1 < this.steps.length) {
+      this.next();
+    }
   };
 
   render() {
@@ -133,18 +131,12 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
 
     const { onSubmit, children, component, ...props } = this.props;
 
-    const { register, next, back, toStep, toFirstStep, toLastStep, stepRef: ref, setWizardState } = this;
+    const { next, back, toStep, toFirstStep, toLastStep, stepRef: ref, setWizardState, stepsMeta } = this;
 
     const magicBag = {
-      current: {
-        step: currentStep,
-        meta: {
-          title: this.steps[currentStep].Title || null,
-          noReturn: this.steps[currentStep].NoReturn || false,
-        },
-      },
+      currentStepIndex: currentStep,
+      stepsMeta,
       setWizardState,
-      register,
       next,
       back,
       toStep,
@@ -159,7 +151,7 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
 
     return (
       <MagicalContext.Provider value={magicBag}>
-        <Formik onSubmit={this.onSubmit} validationSchema={currentValidationSchema} {...props}>
+        <Formik onSubmit={onSubmit || this.onSubmit} validationSchema={currentValidationSchema} {...props}>
           {formikBag => {
             const currentStepElement = React.createElement(
               this.steps[currentStep],
@@ -167,11 +159,16 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
             );
 
             if (!!component) {
-              return React.createElement(component, { step: currentStepElement });
+              return React.createElement(component, {
+                step: currentStepElement,
+                ...stepsMeta[currentStep],
+              });
             }
 
             if (!!children) {
-              return isFunction(children) ? children(currentStepElement) : children;
+              return isFunction(children)
+                ? children({ step: currentStepElement, ...stepsMeta[currentStep] })
+                : children;
             }
 
             return currentStepElement;
