@@ -1,6 +1,6 @@
 {
   "name": "@panenco/formik-wizard-form",
-  "version": "0.0.1-beta.1",
+  "version": "0.0.1-beta.2",
   "description": "Formik wizard form wrapper",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
