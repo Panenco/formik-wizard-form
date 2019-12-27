@@ -123,6 +123,12 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
     }
     if (this.state.currentStep + 1 < this.steps.length) {
       this.next();
+    } else if (!!this.props.onSubmit) {
+      try {
+        await this.props.onSubmit(values, formikBag);
+      } catch (e) {
+        return e;
+      }
     }
   };
 
@@ -151,7 +157,7 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
 
     return (
       <MagicalContext.Provider value={magicBag}>
-        <Formik onSubmit={onSubmit || this.onSubmit} validationSchema={currentValidationSchema} {...props}>
+        <Formik onSubmit={this.onSubmit} validationSchema={currentValidationSchema} {...props}>
           {formikBag => {
             const currentStepElement = React.createElement(
               this.steps[currentStep],

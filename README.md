@@ -241,6 +241,14 @@ const App = () => {
 ReactDOM.render(<App />, document.getElementById('root'));
 ```
 
+## Usage with `connect` from `react-redux`
+
+When you are connecting your redux store to one of the step containers, then form's ref won't be forwarded by `connect` HOC. To make it work again you need to add `{ forwardRef: true }` option as the 4-th argument of `connect`.
+
+```javascript
+connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(StepContainer);
+```
+
 ## Steps Track
 
 If you need to do a steps 'trackline' this can be customly done using Wizard's `MagicalContext`.
