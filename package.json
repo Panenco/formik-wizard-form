@@ -1,6 +1,6 @@
 {
   "name": "@panenco/formik-wizard-form",
-  "version": "0.0.1-beta.4",
+  "version": "0.0.1-beta.5",
   "description": "Formik wizard form wrapper",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -14,7 +14,8 @@
     "build": "rimraf dist && rollup -c",
     "lint": "eslint src --ext=jsx,ts,tsx --fix",
     "prettier": "prettier '{src}/**/*.{js,jsx,ts,tsx}' --write",
-    "pre-commit": "lint-staged"
+    "pre-commit": "lint-staged",
+    "prepublish": "npm run build"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

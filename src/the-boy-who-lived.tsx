@@ -115,20 +115,12 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
 
   onSubmit = async (values, formikBag) => {
     if (this.stepRef.current?.onSubmit) {
-      try {
-        await this.stepRef.current.onSubmit(values, formikBag);
-      } catch (e) {
-        return e;
-      }
+      await this.stepRef.current.onSubmit(values, formikBag);
     }
     if (this.state.currentStep + 1 < this.steps.length) {
       this.next();
     } else if (!!this.props.onSubmit) {
-      try {
-        await this.props.onSubmit(values, formikBag);
-      } catch (e) {
-        return e;
-      }
+      await this.props.onSubmit(values, formikBag);
     }
   };
 
