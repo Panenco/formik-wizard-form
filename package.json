@@ -12,10 +12,11 @@
   "repository": "git@github.com:Panenco/formik-wizard-form.git",
   "scripts": {
     "build": "rimraf dist && rollup -c",
+    "clear": "rimraf dist",
     "lint": "eslint src --ext=jsx,ts,tsx --fix",
     "prettier": "prettier '{src}/**/*.{js,jsx,ts,tsx}' --write",
     "pre-commit": "lint-staged",
-    "prepublish": "npm run build"
+    "prepublishOnly": "npm run build"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -25,6 +26,7 @@
   },
   "peerDependencies": {
     "formik": "^2.0.6",
+    "history": "^4.10.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
   },
@@ -42,6 +44,7 @@
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-react-hooks": "^1.7.0",
     "formik": "^2.0.8",
+    "history": "^4.10.1",
     "lint-staged": "^9.5.0",
     "prettier": "^1.19.1",
     "react": "^16.12.0",
