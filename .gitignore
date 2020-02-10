@@ -3,6 +3,7 @@
 .vscode
 
 node_modules
+lib
 dist
 package-lock.json
 *.log

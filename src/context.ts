@@ -2,7 +2,7 @@ import { createContext, useContext, createElement } from 'react';
 
 export interface WizardStepMeta {
   stepIndex: number;
-  title: string;
+  title: React.ReactNode;
   noReturn: boolean;
   touched: boolean;
 }
@@ -10,9 +10,9 @@ export interface WizardStepMeta {
 export interface MagicalContext {
   currentStepIndex: number;
   stepsMeta: Array<WizardStepMeta>;
-  next: (cb: () => void) => void;
-  back: (cb: () => void) => void;
-  toStep: (step: number, cb: () => void) => void;
+  next: () => void;
+  back: () => void;
+  toStep: (step: number) => void;
   toFirstStep: () => void;
   toLastStep: () => void;
   setWizardState: (state: any | Function) => void;

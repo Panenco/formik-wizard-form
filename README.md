@@ -2,6 +2,16 @@
 
 This package was created to make step-by-step forms easier... I hope so
 
+- [Installation](#installation)
+- [Usage](#usage)
+- [WizardProps](#wizardprops)
+- [WizardBag](#wizardbag)
+- [Rendering](#rendering)
+- [Usage with redux container](#usage-with-connect-from-react-redux)
+- [Creating steps track](#steps-track)
+- [Usage with routers](src/navigators/README.md)
+- [Todo](#to-do-list)
+
 ## Installation
 
 To install breadcrumbs from Panenco's registry follow next steps:
@@ -20,12 +30,39 @@ always-auth=true
 
 The main phylosopy of this wizard form is 'divide and conquer'. Therefore, step containers contain all needed properties for working. Idea is to keep all fields and step related data in the same place like: `Title`, `Validation`, `onSubmit`, `NoReturn`.
 
+### `WizardProps`
+
+Here is the interface that represents WizardForm props. They are obviously extend `FormikConfig`.
+
+```javascript
+interface WizardStepContainer<Values> {
+  onSubmit?: (values?: Values, formikHelpers?: FormikHelpers<Values>) => void | Promise<any>;
+  NoReturn?: boolean;
+  Title?: React.ReactNode;
+  Validation?: any | (() => any);
+}
+
+interface WizardProps<Values> extends FormikConfig<Values> {
+  steps: (React.ComponentType<any> & WizardStepContainer<Values>)[];
+  children?: (
+    current: {
+      step: React.ReactNode,
+    } & WizardStepMeta,
+  ) => React.ReactNode | React.ReactNode;
+  component?: React.ComponentType<any>;
+  navigator?: INavigatorConstructor;
+  initialStep?: number;
+}
+```
+
+About `INavigator` you can read in navigator [README.md](src/navigators/README.md)
+
 ### Create your step containers
 
 There are couple different steps containers definitions examples below. For steps that send data independtly you can define class component method `onSubmit` or in functional components use hook [`useImperativeHandler`](https://reactjs.org/docs/hooks-reference.html#useimperativehandle) in combination with `forwardRef` for exposing methods.
 
 ```javascript
-import * as React from 'react';
+import React from 'react';
 import { Form } from 'formik';
 import Field from '@panenco/formik-form-field';
 import { PrimaryButton, TextInput, SelectInput } from '@panenco/pui';
@@ -98,10 +135,10 @@ export class ThePrisonerOfAzkaban extends React.Component {
 
 There are couple props passed in `MagicalContext` and to all steps as props
 
-```typescript
+```javascript
 export interface WizardStepMeta {
   stepIndex: number;
-  title: string;
+  title: React.ReactNode;
   noReturn: boolean;
   touched: boolean;
 }
@@ -109,17 +146,15 @@ export interface WizardStepMeta {
 export interface MagicalContext {
   currentStepIndex: number;
   stepsMeta: Array<WizardStepMeta>;
-  next: (cb: () => void) => void;
-  back: (cb: () => void) => void;
-  toStep: (step: number, cb: () => void) => void;
+  next: () => void;
+  back: () => void;
+  toStep: (step: number) => void;
   toFirstStep: () => void;
   toLastStep: () => void;
   setWizardState: (state: any | Function) => void;
   readonly wizardState: any;
 }
 ```
-
-Argument `cb: () => void` is a function that is called after internal `setState(..., cb)` of `WizardForm`. May be useful for React-Navigation.
 
 ### Rendering
 
@@ -128,7 +163,7 @@ There are couple ways to render current step.
 #### 1. **Do nothing** will just render current step container and pass `MagicalBag` + `FormikBag` to it 🙃
 
 ```javascript
-import * as React from 'react';
+import React from 'react';
 import { WizardForm } from '@panenco/formik-wizard-form';
 
 import * as HarryPotterAnd from './steps';
@@ -159,7 +194,7 @@ ReactDOM.render(<App />, document.getElementById('root'));
 `children: (current: { step: React.ReactNode } & WizardStepMeta) => React.ReactNode`
 
 ```javascript
-import * as React from 'react';
+import React from 'react';
 import { WizardForm } from '@panenco/formik-wizard-form';
 
 import * as HarryPotterAnd from './steps';
@@ -195,7 +230,7 @@ ReactDOM.render(<App />, document.getElementById('root'));
 #### 3. Use `component` prop with same signature.
 
 ```javascript
-import * as React from 'react';
+import React from 'react';
 import { WizardForm, useWizardContext } from '@panenco/formik-wizard-form';
 import { SecondaryButton } from '@panenco/pui';
 
@@ -254,7 +289,7 @@ connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(StepCon
 If you need to do a steps 'trackline' this can be customly done using Wizard's `MagicalContext`.
 
 ```javascript
-import * as React from 'react';
+import React from 'react';
 import { WizardForm, useWizardContext } from '@panenco/formik-wizard-form';
 
 import * as HarryPotterAnd from './steps';
