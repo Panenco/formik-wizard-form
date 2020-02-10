@@ -2,8 +2,8 @@ import * as React from 'react';
 import { FormikConfig, FormikHelpers, Formik } from 'formik';
 import { object } from 'yup';
 
-import { MagicalContext, WizardStepMeta } from 'context';
-import { isFunction } from 'utils';
+import { MagicalContext, WizardStepMeta } from './context';
+import { isFunction } from './utils';
 
 export interface WizardStepContainer<Values> {
   onSubmit?: (values?: Values, formikHelpers?: FormikHelpers<Values>) => void | Promise<any>;
