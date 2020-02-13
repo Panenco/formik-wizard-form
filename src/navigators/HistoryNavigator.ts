@@ -1,4 +1,4 @@
-import { INavigator, INavigatorConstructor } from '../the-boy-who-lived';
+import { INavigator, INavigatorConstructor, NavigatableStepMeta } from '../the-boy-who-lived';
 
 export class HistoryNavigator implements INavigator {
   static history: any;
@@ -12,21 +12,24 @@ export class HistoryNavigator implements INavigator {
     return HistoryNavigator;
   }
 
-  constructor(steps, initalStepIndex) {
+  constructor(steps: NavigatableStepMeta<any>[], initialStepIndex: number) {
     if (!HistoryNavigator.history) {
       throw new ReferenceError(
         `You probably didn't set "history" object via HistoryNavigator.setHistory() before class usage.`,
       );
     }
+    const { history } = HistoryNavigator;
 
-    this.currentStep = initalStepIndex;
+    this.currentStep = initialStepIndex;
     this.steps = steps;
+    history.replace(this.getStepUrl(0), { ...history.location.state, stepIdx: 0 }); // replacing first page in history
 
-    HistoryNavigator.history.replace(this.getStepUrl(0), { stepIdx: 0 }); // replacing first page in history
-
-    if (initalStepIndex !== 0) {
-      for (let stepIdx = 1; stepIdx <= initalStepIndex; stepIdx += 1) {
-        HistoryNavigator.history.push(this.getStepUrl(stepIdx), { stepIdx });
+    if (initialStepIndex !== 0) {
+      for (let stepIdx = 1; stepIdx <= initialStepIndex; stepIdx += 1) {
+        history.push(this.getStepUrl(stepIdx), {
+          ...history.location.state,
+          stepIdx,
+        });
       }
     }
   }
@@ -47,13 +50,13 @@ export class HistoryNavigator implements INavigator {
     this.unlisten();
   }
 
-  navigate(prevStep, nextStep) {
-    console.log('navigating', prevStep, nextStep);
+  navigate(prevStep: number, nextStep: number) {
+    const { history } = HistoryNavigator;
 
     if (prevStep < nextStep && !this.steps[nextStep].touched) {
-      HistoryNavigator.history.push(this.getStepUrl(nextStep), { stepIdx: nextStep });
+      history.push(this.getStepUrl(nextStep), { ...history.location.state, stepIdx: nextStep });
     } else {
-      HistoryNavigator.history.go(nextStep - prevStep);
+      history.go(nextStep - prevStep);
     }
 
     this.currentStep = nextStep;
