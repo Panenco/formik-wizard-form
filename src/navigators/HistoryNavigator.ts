@@ -53,7 +53,7 @@ export class HistoryNavigator implements INavigator {
   navigate(prevStep: number, nextStep: number) {
     const { history } = HistoryNavigator;
 
-    if (prevStep < nextStep && !this.steps[nextStep].touched) {
+    if (prevStep < nextStep && this.steps[nextStep] && !this.steps[nextStep].touched) {
       history.push(this.getStepUrl(nextStep), { ...history.location.state, stepIdx: nextStep });
     } else {
       history.go(nextStep - prevStep);
