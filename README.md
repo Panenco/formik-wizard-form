@@ -14,17 +14,10 @@ This package was created to make step-by-step forms easier... I hope so
 
 ## Installation
 
-To install breadcrumbs from Panenco's registry follow next steps:
+To install formik-wizard-form please follow next steps:
 
-1. Create `.npmrc` file with the next lines near to your `package.json` file you want to add this package to
-
-```sh
-registry=https://registry.npmjs.org/
-@panenco:registry=https://npm.pkg.github.com
-always-auth=true
-```
-
-2. Check `formik@^2.0.0` to be also installed as a `peerDependency`
+1. Check `formik@^2.0.0` to be also installed as a `peerDependency`
+2. Run `npm i @panenco/formik-wizard-form`
 
 ## Usage
 
