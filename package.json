@@ -6,9 +6,6 @@
   "module": "dist/index.esm.js",
   "author": "Panenco <info@panenco.com>",
   "license": "MIT",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "repository": "git@github.com:Panenco/formik-wizard-form.git",
   "scripts": {
     "build": "npm run clear && rollup -c && tsc",
