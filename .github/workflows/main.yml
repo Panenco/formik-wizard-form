@@ -2,9 +2,9 @@ name: Publishing NPM package
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   publish:
