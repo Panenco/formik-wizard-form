@@ -6,3 +6,5 @@ rollup.config.js
 tsconfig.json
 *.lock
 *.log
+.github
+LICENSE
