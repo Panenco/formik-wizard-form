@@ -6,7 +6,7 @@ That's why we introduce `Navigator` conception. Idea of `Navigator` is to implem
 
 Here is the interface you need to implement in order to make your custom navigator to work with `FormikWizardForm`.
 
-```javascript
+```typescript
 type NavigatableStepMeta<Values> = {
   Step: React.ComponentType<any> & WizardStepContainer<Values>,
 } & WizardStepMeta;
