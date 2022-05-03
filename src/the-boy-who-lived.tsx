@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { ReactElement } from 'react';
 import { Formik, FormikConfig, FormikHelpers, FormikProps } from 'formik';
 import { object } from 'yup';
 
@@ -249,7 +248,7 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
           enableReinitialize
           {...props}
         >
-          {(formikBag: FormikProps<Values>): ReactElement | any => {
+          {(formikBag: FormikProps<Values>): React.ReactNode => {
             const currentStepElement = React.createElement(steps[currentStep], { ref, ...magicBag, ...formikBag });
 
             if (component) {

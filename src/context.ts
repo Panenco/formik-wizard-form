@@ -33,8 +33,8 @@ export const MagicalContext = createContext<MagicalContext>({
 
 export const withWizardContext = <WrappedComponentProps = any>(
   Component: React.ComponentType<WrappedComponentProps>,
-): Function => {
-  const wizardProps: MagicalContext = useContext(MagicalContext);
+): ((props: WrappedComponentProps) => React.ReactElement) => {
+  const wizardProps = useContext(MagicalContext);
 
   return (props: WrappedComponentProps): React.ReactElement => createElement(Component, { ...wizardProps, ...props });
 };
