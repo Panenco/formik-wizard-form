@@ -1,7 +1,7 @@
 src
 .editorconfig
 .prettierrc
-.eslintrc.json
+.eslintrc.js
 rollup.config.js
 tsconfig.json
 *.lock

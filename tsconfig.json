@@ -7,7 +7,7 @@
     "lib": ["dom", "esnext"],
     "module": "esnext",
     "moduleResolution": "node",
-    "target": "es6",
+    "target": "es2019",
     "outDir": "./lib",
     "sourceMap": true,
     "rootDir": "./src",
@@ -20,8 +20,9 @@
     "noUnusedLocals": true,
     "paths": {
       "*": ["node_modules/*", "src/*"]
-    }
+    },
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist", "lib"]
 }

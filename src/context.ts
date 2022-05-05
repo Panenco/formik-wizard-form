@@ -1,4 +1,4 @@
-import { createContext, useContext, createElement } from 'react';
+import React, { createContext, createElement, useContext } from 'react';
 
 export interface WizardStepMeta {
   stepIndex: number;
@@ -33,10 +33,10 @@ export const MagicalContext = createContext<MagicalContext>({
 
 export const withWizardContext = <WrappedComponentProps = any>(
   Component: React.ComponentType<WrappedComponentProps>,
-) => {
+): ((props: WrappedComponentProps) => React.ReactElement) => {
   const wizardProps = useContext(MagicalContext);
 
-  return (props: WrappedComponentProps) => createElement(Component, { ...wizardProps, ...props });
+  return (props: WrappedComponentProps): React.ReactElement => createElement(Component, { ...wizardProps, ...props });
 };
 
 export const useWizardContext = () => {

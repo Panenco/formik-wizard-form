@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FormikConfig, FormikHelpers, Formik } from 'formik';
+import { Formik, FormikConfig, FormikHelpers, FormikProps } from 'formik';
 import { object } from 'yup';
 
 import { MagicalContext, WizardStepMeta } from './context';
@@ -16,23 +16,29 @@ export type NavigatableStepMeta<Values> = {
   Step: React.ComponentType<any> & WizardStepContainer<Values>;
 } & WizardStepMeta;
 
+// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 export interface INavigatorConstructor<Values = any> {
   new (steps: NavigatableStepMeta<Values>[], initialStep: number): INavigator;
 }
 
+// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 export interface INavigator {
   mount(goTo: (n: number, fromNavigator?: boolean) => void): void;
+
   unmount(): void;
+
   navigate(prevStepIndex: number, nextStepIndex: number): void;
 }
 
 export interface WizardProps<Values> extends FormikConfig<Values> {
   steps: (React.ComponentType<any> & WizardStepContainer<Values>)[];
-  children?: (
-    current: {
-      step: React.ReactNode;
-    } & WizardStepMeta,
-  ) => React.ReactNode | React.ReactNode;
+  children?:
+    | ((
+        current: {
+          step: React.ReactNode;
+        } & WizardStepMeta,
+      ) => React.ReactNode)
+    | React.ReactNode;
   component?: React.ComponentType<any>;
   navigator?: INavigatorConstructor;
   initialStep?: number;
@@ -44,11 +50,13 @@ export interface WizardState {
 }
 
 class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, WizardState> {
-  stepRef: any;
-  stepsMeta: WizardStepMeta[];
-  navigator: INavigator;
+  public stepRef: any;
 
-  static displayName = '🧙‍♂️WizardForm';
+  public stepsMeta: WizardStepMeta[];
+
+  public navigator: INavigator;
+
+  public static displayName = '🧙‍♂️WizardForm';
 
   constructor(props: WizardProps<Values>) {
     super(props);
@@ -63,7 +71,7 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
 
     const { navigator: Navigator } = props;
 
-    if (!!Navigator) {
+    if (Navigator) {
       const {
         props: { steps },
         state: { currentStep },
@@ -76,6 +84,7 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   createStepsMeta(steps: (React.ComponentType<any> & WizardStepContainer<Values>)[]) {
     return steps.map((Step, stepIndex) => ({
       stepIndex,
@@ -85,7 +94,7 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
     }));
   }
 
-  componentDidUpdate(prevProps: WizardProps<Values>, prevState: WizardState) {
+  componentDidUpdate(prevProps: WizardProps<Values>, prevState: WizardState): void {
     if (prevProps.steps !== this.props.steps || prevProps.steps.length !== this.props.steps.length) {
       this.stepsMeta = this.createStepsMeta(this.props.steps);
     }
@@ -95,20 +104,18 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
     }
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     this.navigator?.mount(this.toStepFromNavigator); // NAVIGATOR BACK BUTTON LISTENER
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     this.navigator?.unmount(); // NAVIGATOR LISTENER UNREGISTER
   }
 
-  setWizardState = (state: any, cb?: () => void) => {
+  setWizardState = (state: WizardState, cb?: () => void): void => {
     this.setState(
-      currentState => ({
-        magicState: isFunction(state)
-          ? state(currentState.magicState)
-          : Object.assign({}, currentState.magicState, state),
+      (currentState) => ({
+        magicState: isFunction(state) ? state(currentState.magicState) : { ...currentState.magicState, ...state },
       }),
       cb,
     );
@@ -126,7 +133,7 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
     if (step < currentStep) {
       for (let i = step; i < currentStep; i += 1) {
         if (this.props.steps[i].NoReturn) {
-          console.error(`Transgression is prohibited over "point of no return"`);
+          console.error('Transgression is prohibited over "point of no return"');
           return false;
         }
       }
@@ -134,7 +141,7 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
       // Traveling forward
       for (let i = currentStep + 1; i <= step; i += 1) {
         if (this.props.steps[i && i - 1].NoReturn) {
-          console.error(`Transgression is prohibited over "point of no return"`);
+          console.error('Transgression is prohibited over "point of no return"');
           return false;
         }
       }
@@ -143,7 +150,7 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
     return true;
   }
 
-  toStep = (step: number) => {
+  toStep = (step: number): void => {
     const { currentStep } = this.state;
 
     if (step === currentStep || !this.isTransgressionAllowed(step)) return;
@@ -158,7 +165,7 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
     );
   };
 
-  toStepFromNavigator = (step: number) => {
+  toStepFromNavigator = (step: number): void => {
     const { currentStep } = this.state;
 
     if (step === currentStep || !this.isTransgressionAllowed(step)) return;
@@ -168,15 +175,15 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
     });
   };
 
-  toFirstStep = () => this.toStep(0);
+  toFirstStep = (): void => this.toStep(0);
 
-  toLastStep = () => this.toStep(this.props.steps.length - 1);
+  toLastStep = (): void => this.toStep(this.props.steps.length - 1);
 
-  next = () => {
+  next = (): void => {
     const { currentStep: prevStep } = this.state;
 
     this.setState(
-      state => ({
+      (state) => ({
         currentStep: state.currentStep + 1 < this.props.steps.length ? state.currentStep + 1 : state.currentStep,
       }),
       () => {
@@ -185,23 +192,23 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
     );
   };
 
-  back = () => {
+  back = (): void => {
     const { currentStep } = this.state;
     this.toStep(currentStep - 1);
   };
 
-  onSubmit = async (values: Values, formikBag: FormikHelpers<Values>) => {
+  onSubmit = async (values: Values, formikBag: FormikHelpers<Values>): Promise<void> => {
     if (this.stepRef.current?.onSubmit) {
       await this.stepRef.current.onSubmit(values, formikBag);
     }
     if (this.state.currentStep + 1 < this.props.steps.length) {
       this.next();
-    } else if (!!this.props.onSubmit) {
+    } else if (this.props.onSubmit) {
       await this.props.onSubmit(values, formikBag);
     }
   };
 
-  onReset = () => {
+  onReset = (): void => {
     this.stepsMeta = this.createStepsMeta(this.props.steps);
     this.setState({
       currentStep: 0,
@@ -209,7 +216,7 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
     });
   };
 
-  render() {
+  render(): React.ReactElement {
     const { currentStep, magicState } = this.state;
 
     const { onSubmit, children, component, steps, ...props } = this.props;
@@ -241,20 +248,17 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
           enableReinitialize
           {...props}
         >
-          {formikBag => {
-            const currentStepElement = React.createElement(
-              steps[currentStep],
-              Object.assign({ ref }, magicBag, formikBag),
-            );
+          {(formikBag: FormikProps<Values>): React.ReactNode => {
+            const currentStepElement = React.createElement(steps[currentStep], { ref, ...magicBag, ...formikBag });
 
-            if (!!component) {
+            if (component) {
               return React.createElement(component, {
                 step: currentStepElement,
                 ...stepsMeta[currentStep],
               });
             }
 
-            if (!!children) {
+            if (children) {
               return isFunction(children)
                 ? children({ step: currentStepElement, ...stepsMeta[currentStep] })
                 : children;
