@@ -112,7 +112,7 @@ class HarryPotter<Values = any> extends React.Component<WizardProps<Values>, Wiz
     this.navigator?.unmount(); // NAVIGATOR LISTENER UNREGISTER
   }
 
-  setWizardState = (state: any, cb?: () => void): void => {
+  setWizardState = (state: WizardState, cb?: () => void): void => {
     this.setState(
       (currentState) => ({
         magicState: isFunction(state) ? state(currentState.magicState) : { ...currentState.magicState, ...state },

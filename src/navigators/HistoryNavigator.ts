@@ -3,7 +3,7 @@ import { INavigator, INavigatorConstructor, NavigatableStepMeta } from '../the-b
 export class HistoryNavigator implements INavigator {
   public static history: any;
 
-  public currentStep: any;
+  public currentStep: number;
 
   public unlisten: () => void;
 
