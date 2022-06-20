@@ -8,12 +8,12 @@
   "license": "MIT",
   "repository": "git@github.com:Panenco/formik-wizard-form.git",
   "scripts": {
-    "build": "npm run clear && rollup -c && tsc",
+    "build": "yarn run clear && rollup -c && tsc",
     "clear": "rimraf dist lib",
     "lint": "eslint src --ext=jsx,ts,tsx --fix",
     "prettier": "prettier 'src/**/*.{js,jsx,ts,tsx}' --write",
     "pre-commit": "lint-staged",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "yarn run build",
     "prepare": "husky install"
   },
   "lint-staged": {
@@ -25,7 +25,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "npm run pre-commit"
+      "pre-commit": "yarn run pre-commit"
     }
   },
   "peerDependencies": {
