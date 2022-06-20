@@ -7,3 +7,7 @@ lib
 dist
 package-lock.json
 *.log
+
+*.gzip
+*.zip
+*.gz

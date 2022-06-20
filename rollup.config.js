@@ -23,14 +23,14 @@ export default {
       file: packageJson.main,
       format: 'cjs',
       exports: 'named',
-      sourcemap: true
+      sourcemap: true,
     },
     {
       file: packageJson.module,
       format: 'esm',
       exports: 'named',
-      sourcemap: true
-    }
+      sourcemap: true,
+    },
   ],
   external,
   plugins: [
@@ -45,7 +45,7 @@ export default {
       },
     }),
     typescript({
-        clean: true
+      clean: true,
     }),
     commonjs({
       include: /node_modules/,
